@@ -345,3 +345,5 @@ SELECT * FROM Project;
 SELECT * FROM Proposal;
 SELECT * FROM Contract;
 SELECT * FROM Payment;
+SELECT * FROM Review;
+SELECT * FROM Dispute;
