@@ -56,8 +56,8 @@ CREATE TABLE Project (
     description TEXT,
     budget DECIMAL(12,2) CHECK (budget > 0),
     project_type VARCHAR(50),
-    status VARCHAR(30),
-    created_at DATETIME,
+    status ENUM('OPEN','IN_PROGRESS','COMPLETED','CANCELLED'),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE CASCADE
 );
 
@@ -66,6 +66,7 @@ CREATE TABLE Proposal (
     fl_id INT NOT NULL,
     project_id INT NOT NULL,
     proposed_text TEXT,
+    unique_proposal UNIQUE (fl_id, project_id);
     proposed_amount DECIMAL(12,2) CHECK (proposed_amount > 0),
     deadline DATE,
     status VARCHAR(30),
@@ -78,7 +79,8 @@ CREATE TABLE Contract (
     proposal_id INT NOT NULL,
     start_date DATE,
     end_date DATE,
-    status VARCHAR(30),
+    chk_dates CHECK (end_date >= start_date),
+    status ENUM('ACTIVE','COMPLETED','TERMINATED'),
     submitted_at DATETIME,
     FOREIGN KEY (proposal_id) REFERENCES Proposal(proposal_id) ON DELETE CASCADE
 );
@@ -88,7 +90,7 @@ CREATE TABLE Payment (
     contract_id INT NOT NULL,
     amount DECIMAL(12,2) CHECK (amount > 0),
     payment_method VARCHAR(50),
-    payment_status VARCHAR(30),
+    payment_status ENUM('PENDING','COMPLETED','FAILED'),
     payment_date DATE,
     FOREIGN KEY (contract_id) REFERENCES Contract(contract_id) ON DELETE CASCADE
 );
@@ -111,7 +113,7 @@ CREATE TABLE Dispute (
     fl_id INT,
     client_id INT,
     raised_date DATE,
-    status VARCHAR(30),
+    status ENUM('OPEN','RESOLVED'),
     resolved_at DATE,
     FOREIGN KEY (contract_id) REFERENCES Contract(contract_id) ON DELETE CASCADE,
     FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE SET NULL,
@@ -123,6 +125,8 @@ CREATE INDEX idx_proposal_project ON Proposal(project_id);
 CREATE INDEX idx_proposal_freelancer ON Proposal(fl_id);
 CREATE INDEX idx_contract_proposal ON Contract(proposal_id);
 CREATE INDEX idx_payment_contract ON Payment(contract_id);
+CREATE INDEX idx_review_fl ON Review(fl_id);
+
 
 INSERT INTO User VALUES
 (1,'Amit','amit@gmail.com','9999990001','pass','CLIENT'),
