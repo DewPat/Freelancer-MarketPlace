@@ -15,7 +15,7 @@ CREATE TABLE Admin (
     admin_id INT PRIMARY KEY,
     user_id INT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Client (
@@ -23,7 +23,7 @@ CREATE TABLE Client (
     user_id INT NOT NULL,
     type ENUM('INDIVIDUAL','ORGANIZATION'),
     company VARCHAR(100),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Freelancer (
@@ -32,7 +32,7 @@ CREATE TABLE Freelancer (
     bio TEXT,
     rate DECIMAL(10,2),
     availability VARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Skill (
@@ -46,8 +46,8 @@ CREATE TABLE Freelancer_Skill (
     fl_id INT,
     skill_id INT,
     PRIMARY KEY (fl_id, skill_id),
-    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id),
-    FOREIGN KEY (skill_id) REFERENCES Skill(skill_id)
+    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES Skill(skill_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Project (
@@ -58,7 +58,7 @@ CREATE TABLE Project (
     project_type VARCHAR(50),
     status VARCHAR(30),
     created_at DATETIME,
-    FOREIGN KEY (client_id) REFERENCES Client(client_id)
+    FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Proposal (
@@ -69,8 +69,8 @@ CREATE TABLE Proposal (
     proposed_amount DECIMAL(12,2) CHECK (proposed_amount > 0),
     deadline DATE,
     status VARCHAR(30),
-    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id),
-    FOREIGN KEY (project_id) REFERENCES Project(project_id)
+    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Contract (
@@ -80,7 +80,7 @@ CREATE TABLE Contract (
     end_date DATE,
     status VARCHAR(30),
     submitted_at DATETIME,
-    FOREIGN KEY (proposal_id) REFERENCES Proposal(proposal_id)
+    FOREIGN KEY (proposal_id) REFERENCES Proposal(proposal_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Payment (
@@ -90,7 +90,7 @@ CREATE TABLE Payment (
     payment_method VARCHAR(50),
     payment_status VARCHAR(30),
     payment_date DATE,
-    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id)
+    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id) ON DELETE CASCADE
 );
 
 CREATE TABLE Review (
@@ -100,9 +100,9 @@ CREATE TABLE Review (
     client_id INT,
     rating INT CHECK (rating BETWEEN 1 AND 5),
     comments TEXT,
-    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
-    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id),
-    FOREIGN KEY (client_id) REFERENCES Client(client_id)
+    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id) ON DELETE CASCADE,
+    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE SET NULL,
+    FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE SET NULL
 );
 
 CREATE TABLE Dispute (
@@ -113,9 +113,9 @@ CREATE TABLE Dispute (
     raised_date DATE,
     status VARCHAR(30),
     resolved_at DATE,
-    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id),
-    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id),
-    FOREIGN KEY (client_id) REFERENCES Client(client_id)
+    FOREIGN KEY (contract_id) REFERENCES Contract(contract_id) ON DELETE CASCADE,
+    FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE SET NULL,
+    FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_project_client ON Project(client_id);
