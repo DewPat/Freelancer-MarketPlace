@@ -57,7 +57,7 @@ CREATE TABLE Project (
     budget DECIMAL(12,2) CHECK (budget > 0),
     project_type VARCHAR(50),
     status ENUM('OPEN','IN_PROGRESS','COMPLETED','CANCELLED'),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME,
     FOREIGN KEY (client_id) REFERENCES Client(client_id) ON DELETE CASCADE
 );
 
@@ -66,10 +66,10 @@ CREATE TABLE Proposal (
     fl_id INT NOT NULL,
     project_id INT NOT NULL,
     proposed_text TEXT,
-    unique_proposal UNIQUE (fl_id, project_id),
     proposed_amount DECIMAL(12,2) CHECK (proposed_amount > 0),
     deadline DATE,
-    status VARCHAR(30),
+    status ENUM('SUBMITTED','ACCEPTED','REJECTED'),
+    UNIQUE (fl_id, project_id),
     FOREIGN KEY (fl_id) REFERENCES Freelancer(fl_id) ON DELETE CASCADE,
     FOREIGN KEY (project_id) REFERENCES Project(project_id) ON DELETE CASCADE
 );
@@ -79,7 +79,6 @@ CREATE TABLE Contract (
     proposal_id INT NOT NULL,
     start_date DATE,
     end_date DATE,
-    chk_dates CHECK (end_date >= start_date),
     status ENUM('ACTIVE','COMPLETED','TERMINATED'),
     submitted_at DATETIME,
     FOREIGN KEY (proposal_id) REFERENCES Proposal(proposal_id) ON DELETE CASCADE
