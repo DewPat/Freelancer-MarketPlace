@@ -66,7 +66,7 @@ CREATE TABLE Proposal (
     fl_id INT NOT NULL,
     project_id INT NOT NULL,
     proposed_text TEXT,
-    unique_proposal UNIQUE (fl_id, project_id);
+    unique_proposal UNIQUE (fl_id, project_id),
     proposed_amount DECIMAL(12,2) CHECK (proposed_amount > 0),
     deadline DATE,
     status VARCHAR(30),
